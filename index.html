@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CricPulse - Ultimate Cricket Hub & Live Match Insights</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Fonts: Oxanium for sporty futuristic headers, Inter for crisp text -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Oxanium:wght@500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            stadium: {
+              bg: '#0a0e17',
+              card: '#121827',
+              border: '#1f293d',
+            },
+            neon: {
+              green: '#10b981',
+              greenGlow: '#059669',
+              cyan: '#06b6d4',
+              yellow: '#facc15',
+              pink: '#f43f5e',
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            sport: ['Oxanium', 'cursive', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background-color: #0a0e17;
+      color: #f3f4f6;
+      font-family: 'Inter', sans-serif;
+      overflow-x: hidden;
+    }
+    .font-sport {
+      font-family: 'Oxanium', cursive, sans-serif;
+    }
+
+    /* Stadium Glow Background */
+    .stadium-glow {
+      background: radial-gradient(circle at 50% -20%, rgba(16, 185, 129, 0.25), rgba(6, 182, 212, 0.1) 40%, rgba(10, 14, 23, 1) 80%);
+    }
+
+    /* Glassmorphism Cards */
+    .glass-card {
+      background: rgba(18, 24, 39, 0.75);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .glass-card-glow {
+      background: rgba(18, 24, 39, 0.85);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      box-shadow: 0 0 25px -5px rgba(16, 185, 129, 0.15);
+    }
+
+    /* Neon Text Glow */
+    .text-glow-green {
+      text-shadow: 0 0 12px rgba(16, 185, 129, 0.6);
+    }
+    .text-glow-cyan {
+      text-shadow: 0 0 12px rgba(6, 182, 212, 0.6);
+    }
+
+    /* Floating Ball Animation */
+    @keyframes floatBall {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-12px) rotate(180deg); }
+    }
+    .animate-float-ball {
+      animation: floatBall 6s ease-in-out infinite;
+    }
+
+    /* Pulse Border Animation */
+    @keyframes pulseNeon {
+      0%, 100% { border-color: rgba(16, 185, 129, 0.8); box-shadow: 0 0 15px rgba(16, 185, 129, 0.4); }
+      50% { border-color: rgba(6, 182, 212, 0.8); box-shadow: 0 0 20px rgba(6, 182, 212, 0.5); }
+    }
+    .animate-neon-pulse {
+      animation: pulseNeon 3s infinite;
+    }
+
+    /* Ball Trajectory Animation for Pitch Simulation */
+    @keyframes bowlPitch {
+      0% { transform: scale(0.3) translate(-200px, -150px); opacity: 0; }
+      50% { transform: scale(1) translate(0, 0); opacity: 1; }
+      100% { transform: scale(1.6) translate(180px, -120px); opacity: 0; }
+    }
+    .animate-bowl-shot {
+      animation: bowlPitch 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+    }
+  </style>
+</head>
+<body class="antialiased selection:bg-neon-green selection:text-black pb-20 md:pb-0">
+
+  <!-- Top Navigation Header -->
+  <header class="sticky top-0 z-50 bg-stadium-bg/80 backdrop-blur-md border-b border-stadium-border transition-all">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      
+      <!-- Brand Logo -->
+      <a href="#" class="flex items-center gap-3 group">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-neon-green to-neon-cyan p-0.5 shadow-lg shadow-neon-green/20 group-hover:scale-105 transition-transform">
+          <div class="w-full h-full bg-stadium-bg rounded-[10px] flex items-center justify-center">
+            <i class="fa-solid fa-baseball text-neon-green text-lg group-hover:rotate-45 transition-transform duration-300"></i>
+          </div>
+        </div>
+        <div>
+          <span class="font-sport font-extrabold text-xl tracking-wider text-white flex items-center gap-1.5">
+            CRIC<span class="text-neon-green">PULSE</span>
+            <span class="inline-block w-2 h-2 rounded-full bg-neon-green animate-ping"></span>
+          </span>
+          <span class="text-[10px] text-gray-400 font-semibold tracking-widest uppercase block -mt-1">
+            Live Insights & Community
+          </span>
+        </div>
+      </a>
+
+      <!-- Quick Status Badge & Header CTA -->
+      <div class="flex items-center gap-4">
+        <div class="hidden md:flex items-center gap-2 bg-stadium-card border border-stadium-border px-3 py-1.5 rounded-full text-xs">
+          <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+          <span class="text-gray-300 font-medium"><span id="header-match-title">IND vs AUS</span> Live Now</span>
+        </div>
+
+        <button onclick="handleTelegramClick()" class="telegram-link inline-flex items-center gap-2 bg-gradient-to-r from-neon-green to-emerald-600 hover:from-emerald-500 hover:to-teal-500 text-stadium-bg font-sport font-bold px-4 py-2 rounded-xl text-sm shadow-lg shadow-neon-green/25 hover:shadow-neon-green/40 transition-all active:scale-95">
+          <i class="fa-brands fa-telegram text-base"></i>
+          <span class="hidden sm:inline">Join Telegram</span>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="relative stadium-glow pt-8 pb-16 md:pt-16 md:pb-24 overflow-hidden">
+    <!-- Decorative background lighting & elements -->
+    <div class="absolute top-1/4 left-10 w-72 h-72 bg-neon-green/10 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute bottom-10 right-10 w-80 h-80 bg-neon-cyan/10 rounded-full blur-3xl pointer-events-none"></div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+        
+        <!-- Left Hero Content -->
+        <div class="lg:col-span-7 text-center lg:text-left space-y-6">
+          
+          <!-- Live Status Tag -->
+          <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-stadium-card border border-neon-green/40 text-neon-green text-xs font-sport tracking-wider uppercase shadow-md">
+            <i class="fa-solid fa-bolt text-neon-yellow"></i>
+            <span id="hero-tag">#1 Cricket Analytics & Match Predictors</span>
+          </div>
+
+          <!-- Main Dynamic Headline -->
+          <h1 id="hero-headline" class="font-sport text-3xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-tight">
+            Ultimate Cricket Hub & Live Match Insights
+          </h1>
+
+          <!-- Subheadline & Live Stats -->
+          <p id="hero-subheadline" class="text-gray-300 text-base sm:text-lg max-w-2xl mx-auto lg:mx-0 font-normal leading-relaxed">
+            Join <span class="text-neon-yellow font-bold text-glow-yellow">50,000+ Cricket Fans</span> for Daily Ball-by-Ball Analysis, Fantasy Squad Picks, and Real-Time Match Odds!
+          </p>
+
+          <!-- Key Feature Pills -->
+          <div class="flex flex-wrap justify-center lg:justify-start gap-2 pt-1">
+            <span class="bg-stadium-card/80 border border-stadium-border text-xs text-gray-300 px-3 py-1.5 rounded-lg flex items-center gap-1.5">
+              <i class="fa-solid fa-check text-neon-green"></i> Ball-by-Ball Tips
+            </span>
+            <span class="bg-stadium-card/80 border border-stadium-border text-xs text-gray-300 px-3 py-1.5 rounded-lg flex items-center gap-1.5">
+              <i class="fa-solid fa-check text-neon-green"></i> Fantasy Playing XI
+            </span>
+            <span class="bg-stadium-card/80 border border-stadium-border text-xs text-gray-300 px-3 py-1.5 rounded-lg flex items-center gap-1.5">
+              <i class="fa-solid fa-check text-neon-green"></i> 89%+ Accuracy Rate
+            </span>
+          </div>
+
+          <!-- CTA Buttons -->
+          <div class="pt-4 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
+            <button onclick="handleTelegramClick()" class="telegram-link w-full sm:w-auto inline-flex items-center justify-center gap-3 bg-gradient-to-r from-neon-green via-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 text-stadium-bg font-sport font-extrabold px-8 py-4 rounded-2xl text-lg shadow-xl shadow-neon-green/30 hover:shadow-neon-green/50 transition-all transform hover:-translate-y-0.5 active:translate-y-0">
+              <i class="fa-brands fa-telegram text-2xl"></i>
+              <span>Join Telegram Channel Now</span>
+              <i class="fa-solid fa-chevron-right text-xs"></i>
+            </button>
+          </div>
+
+          <p class="text-xs text-gray-400 flex items-center justify-center lg:justify-start gap-1.5 pt-1">
+            <i class="fa-solid fa-shield-halved text-neon-green"></i> 100% Free VIP Channel Access • Instant Notification
+          </p>
+        </div>
+
+        <!-- Right Interactive Live Match & Pitch Simulator Card -->
+        <div class="lg:col-span-5 flex justify-center">
+          <div class="w-full max-w-md">
+            
+            <div class="glass-card-glow rounded-3xl p-6 relative overflow-hidden">
+              
+              <!-- Header Badges -->
+              <div class="flex items-center justify-between border-b border-stadium-border pb-4 mb-4">
+                <div class="flex items-center gap-2">
+                  <span class="w-3 h-3 rounded-full bg-red-500 animate-ping"></span>
+                  <span class="font-sport font-bold text-xs tracking-wider text-red-400 uppercase">Interactive Match Center</span>
+                </div>
+                <span class="text-xs text-neon-cyan font-mono bg-neon-cyan/10 px-2.5 py-1 rounded-md border border-neon-cyan/20">
+                  T20 WORLD SERIES
+                </span>
+              </div>
+
+              <!-- Scoreboard Teams -->
+              <div class="grid grid-cols-2 gap-4 text-center my-2 bg-stadium-bg/60 p-4 rounded-2xl border border-stadium-border">
+                <!-- Team 1 -->
+                <div class="space-y-1">
+                  <div class="text-2xl font-bold flex items-center justify-center gap-2">
+                    <span class="text-2xl">🇮🇳</span>
+                    <span class="font-sport text-white">IND</span>
+                  </div>
+                  <div class="text-xs text-gray-400">Target: 182</div>
+                  <div id="sim-score-ind" class="font-sport font-extrabold text-2xl text-neon-green text-glow-green">
+                    142/3
+                  </div>
+                  <div id="sim-overs-ind" class="text-xs font-mono text-gray-400">15.2 / 20.0 Overs</div>
+                </div>
+
+                <!-- Versus Divider -->
+                <div class="hidden"></div>
+
+                <!-- Team 2 -->
+                <div class="space-y-1 border-l border-stadium-border pl-4">
+                  <div class="text-2xl font-bold flex items-center justify-center gap-2">
+                    <span class="text-2xl">🇦🇺</span>
+                    <span class="font-sport text-gray-300">AUS</span>
+                  </div>
+                  <div class="text-xs text-gray-400">1st Innings</div>
+                  <div class="font-sport font-extrabold text-2xl text-gray-200">
+                    181/6
+                  </div>
+                  <div class="text-xs font-mono text-gray-400">20.0 Overs</div>
+                </div>
+              </div>
+
+              <!-- Interactive Pitch Graphics / Ball Result Display -->
+              <div class="relative bg-gradient-to-b from-emerald-950/60 to-stadium-bg border border-emerald-500/30 rounded-2xl p-4 my-4 text-center min-h-[140px] flex flex-col justify-center items-center overflow-hidden">
+                <!-- Visual Cricket Pitch Stumps Illustration -->
+                <div class="absolute opacity-20 text-emerald-400 pointer-events-none text-6xl">
+                  <i class="fa-solid fa-align-justify"></i>
+                </div>
+
+                <div id="ball-anim-container" class="relative z-10 space-y-1">
+                  <span id="pitch-status-text" class="text-xs text-emerald-300 uppercase font-sport tracking-widest block">
+                    Tap below to simulate live ball outcome
+                  </span>
+                  <div id="ball-outcome-display" class="font-sport font-extrabold text-4xl text-neon-yellow tracking-wider my-1">
+                    READY
+                  </div>
+                  <span id="pitch-commentary" class="text-xs text-gray-300 block font-sans italic">
+                    "India needs 40 runs from 28 balls..."
+                  </span>
+                </div>
+              </div>
+
+              <!-- Simulation Trigger Button -->
+              <div class="space-y-2">
+                <button onclick="simulateNextBall()" class="w-full bg-stadium-card hover:bg-stadium-border border border-neon-green/50 hover:border-neon-green text-neon-green font-sport font-bold py-3 px-4 rounded-xl text-sm flex items-center justify-center gap-2 transition-all active:scale-95 shadow-md">
+                  <i class="fa-solid fa-baseball text-neon-yellow"></i>
+                  <span>SIMULATE NEXT BALL</span>
+                </button>
+
+                <div class="text-[11px] text-center text-gray-400 flex items-center justify-center gap-2">
+                  <span>Recent Balls:</span>
+                  <div id="recent-balls" class="flex gap-1 font-mono text-xs">
+                    <span class="bg-gray-800 px-1.5 py-0.5 rounded text-gray-300">1</span>
+                    <span class="bg-neon-green/20 text-neon-green px-1.5 py-0.5 rounded">4</span>
+                    <span class="bg-gray-800 px-1.5 py-0.5 rounded text-gray-300">0</span>
+                    <span class="bg-neon-yellow/20 text-neon-yellow px-1.5 py-0.5 rounded">6</span>
+                    <span class="bg-red-500/20 text-red-400 px-1.5 py-0.5 rounded">W</span>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Interactive Cricket Prediction Widget -->
+  <section class="py-12 bg-stadium-bg relative border-y border-stadium-border">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6">
+      
+      <div class="glass-card rounded-3xl p-6 sm:p-8 relative overflow-hidden border border-neon-cyan/30">
+        
+        <div class="text-center max-w-xl mx-auto mb-6">
+          <span class="bg-neon-cyan/10 border border-neon-cyan/30 text-neon-cyan text-xs font-sport uppercase px-3 py-1 rounded-full inline-block mb-2">
+            Interactive Prediction Challenge
+          </span>
+          <h2 class="font-sport text-2xl sm:text-3xl font-bold text-white">
+            Who Will Win Today's Clash?
+          </h2>
+          <p class="text-gray-400 text-xs sm:text-sm mt-1">
+            Pick your winning team to unlock VIP Prediction Telegram Channel Access!
+          </p>
+        </div>
+
+        <!-- Interactive Quiz Container -->
+        <div id="quiz-container" class="space-y-4 max-w-xl mx-auto">
+          
+          <div class="grid grid-cols-2 gap-4">
+            <!-- Option 1: India -->
+            <button onclick="selectPrediction('India')" class="quiz-btn bg-stadium-card hover:bg-emerald-950/60 border-2 border-stadium-border hover:border-neon-green rounded-2xl p-4 text-center transition-all group">
+              <div class="text-4xl mb-2 group-hover:scale-110 transition-transform">🇮🇳</div>
+              <div class="font-sport font-bold text-lg text-white">INDIA</div>
+              <span class="text-[11px] text-neon-green font-mono">Win Probability: 62%</span>
+            </button>
+
+            <!-- Option 2: Australia -->
+            <button onclick="selectPrediction('Australia')" class="quiz-btn bg-stadium-card hover:bg-emerald-950/60 border-2 border-stadium-border hover:border-neon-green rounded-2xl p-4 text-center transition-all group">
+              <div class="text-4xl mb-2 group-hover:scale-110 transition-transform">🇦🇺</div>
+              <div class="font-sport font-bold text-lg text-white">AUSTRALIA</div>
+              <span class="text-[11px] text-neon-cyan font-mono">Win Probability: 38%</span>
+            </button>
+          </div>
+
+        </div>
+
+        <!-- Success Result (Hidden by default) -->
+        <div id="quiz-result" class="hidden text-center max-w-md mx-auto space-y-4 py-4">
+          <div class="w-16 h-16 rounded-full bg-neon-green/20 text-neon-green text-3xl flex items-center justify-center mx-auto border border-neon-green animate-bounce">
+            <i class="fa-solid fa-trophy"></i>
+          </div>
+          <h3 class="font-sport font-extrabold text-2xl text-white">
+            Prediction Locked In!
+          </h3>
+          <p id="quiz-result-text" class="text-sm text-gray-300">
+            Great choice! Get the complete ball-by-ball strategy and player XI breakdown on our VIP Telegram.
+          </p>
+
+          <button onclick="handleTelegramClick()" class="telegram-link inline-flex items-center justify-center gap-3 bg-gradient-to-r from-neon-green to-emerald-500 text-stadium-bg font-sport font-extrabold px-8 py-3.5 rounded-xl text-base shadow-lg shadow-neon-green/30 hover:shadow-neon-green/50 active:scale-95 transition-all">
+            <i class="fa-brands fa-telegram text-xl"></i>
+            <span>Unlock VIP Channel Now</span>
+          </button>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="py-16 bg-stadium-bg relative">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="text-center max-w-2xl mx-auto mb-12">
+        <h2 class="font-sport text-3xl sm:text-4xl font-extrabold text-white">
+          Why Cricket Fans Trust <span class="text-neon-green">CricPulse</span>
+        </h2>
+        <p class="text-gray-400 text-sm sm:text-base mt-2">
+          Get real-time advantages with expert insights, match data, and fantasy intelligence.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        
+        <!-- Feature 1 -->
+        <div class="glass-card rounded-2xl p-6 hover:border-neon-green/50 transition-all hover:-translate-y-1 group">
+          <div class="w-12 h-12 rounded-xl bg-neon-green/10 text-neon-green flex items-center justify-center text-2xl mb-4 group-hover:scale-110 transition-transform">
+            <i class="fa-solid fa-chart-line"></i>
+          </div>
+          <h3 class="font-sport font-bold text-lg text-white mb-2">Ball-by-Ball Analysis</h3>
+          <p class="text-xs text-gray-400 leading-relaxed">
+            Real-time match trend breakdowns, pitch conditions, and session key indicators.
+          </p>
+        </div>
+
+        <!-- Feature 2 -->
+        <div class="glass-card rounded-2xl p-6 hover:border-neon-cyan/50 transition-all hover:-translate-y-1 group">
+          <div class="w-12 h-12 rounded-xl bg-neon-cyan/10 text-neon-cyan flex items-center justify-center text-2xl mb-4 group-hover:scale-110 transition-transform">
+            <i class="fa-solid fa-users"></i>
+          </div>
+          <h3 class="font-sport font-bold text-lg text-white mb-2">Fantasy Playing XI</h3>
+          <p class="text-xs text-gray-400 leading-relaxed">
+            Data-backed player picks, captaincy choices, and differential players for fantasy leagues.
+          </p>
+        </div>
+
+        <!-- Feature 3 -->
+        <div class="glass-card rounded-2xl p-6 hover:border-neon-yellow/50 transition-all hover:-translate-y-1 group">
+          <div class="w-12 h-12 rounded-xl bg-neon-yellow/10 text-neon-yellow flex items-center justify-center text-2xl mb-4 group-hover:scale-110 transition-transform">
+            <i class="fa-solid fa-bell"></i>
+          </div>
+          <h3 class="font-sport font-bold text-lg text-white mb-2">Instant Match Alerts</h3>
+          <p class="text-xs text-gray-400 leading-relaxed">
+            Never miss toss updates, weather reports, playing squad announcements, or key wickets.
+          </p>
+        </div>
+
+        <!-- Feature 4 -->
+        <div class="glass-card rounded-2xl p-6 hover:border-neon-pink/50 transition-all hover:-translate-y-1 group">
+          <div class="w-12 h-12 rounded-xl bg-neon-pink/10 text-neon-pink flex items-center justify-center text-2xl mb-4 group-hover:scale-110 transition-transform">
+            <i class="fa-solid fa-comments"></i>
+          </div>
+          <h3 class="font-sport font-bold text-lg text-white mb-2">Live Community Hub</h3>
+          <p class="text-xs text-gray-400 leading-relaxed">
+            Discuss match turning points with thousands of active, passionate cricket fans daily.
+          </p>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Community Highlights & Stats Section -->
+  <section class="py-12 bg-gradient-to-b from-stadium-card/80 to-stadium-bg border-y border-stadium-border">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+        
+        <div class="space-y-1">
+          <div id="stat-members" class="font-sport font-extrabold text-3xl sm:text-4xl text-neon-green">
+            50,000+
+          </div>
+          <div class="text-xs text-gray-400 uppercase tracking-wider font-semibold">Active Members</div>
+        </div>
+
+        <div class="space-y-1">
+          <div id="stat-accuracy" class="font-sport font-extrabold text-3xl sm:text-4xl text-neon-cyan">
+            89.4%
+          </div>
+          <div class="text-xs text-gray-400 uppercase tracking-wider font-semibold">Analysis Accuracy</div>
+        </div>
+
+        <div class="space-y-1">
+          <div id="stat-matches" class="font-sport font-extrabold text-3xl sm:text-4xl text-neon-yellow">
+            1,200+
+          </div>
+          <div class="text-xs text-gray-400 uppercase tracking-wider font-semibold">Matches Covered</div>
+        </div>
+
+        <div class="space-y-1">
+          <div class="font-sport font-extrabold text-3xl sm:text-4xl text-white">
+            100%
+          </div>
+          <div class="text-xs text-gray-400 uppercase tracking-wider font-semibold">Free Community</div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- 3 Steps How It Works -->
+  <section class="py-16 bg-stadium-bg">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="text-center max-w-2xl mx-auto mb-12">
+        <span class="text-neon-green font-sport text-xs uppercase tracking-widest">Simple Setup</span>
+        <h2 class="font-sport text-3xl font-extrabold text-white mt-1">
+          Get Started in 3 Easy Steps
+        </h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        
+        <!-- Step 1 -->
+        <div class="glass-card rounded-2xl p-6 text-center space-y-3 relative">
+          <div class="w-10 h-10 rounded-full bg-neon-green text-stadium-bg font-sport font-black text-lg flex items-center justify-center mx-auto shadow-md shadow-neon-green/20">
+            01
+          </div>
+          <h3 class="font-sport font-bold text-lg text-white">Tap Join Telegram</h3>
+          <p class="text-xs text-gray-400 leading-relaxed">
+            Click any button on this page to open our official Telegram channel link directly.
+          </p>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="glass-card rounded-2xl p-6 text-center space-y-3 relative">
+          <div class="w-10 h-10 rounded-full bg-neon-cyan text-stadium-bg font-sport font-black text-lg flex items-center justify-center mx-auto shadow-md shadow-neon-cyan/20">
+            02
+          </div>
+          <h3 class="font-sport font-bold text-lg text-white">Enable Notifications</h3>
+          <p class="text-xs text-gray-400 leading-relaxed">
+            Mute non-essential chats so you get instantly notified during crucial match moments.
+          </p>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="glass-card rounded-2xl p-6 text-center space-y-3 relative">
+          <div class="w-10 h-10 rounded-full bg-neon-yellow text-stadium-bg font-sport font-black text-lg flex items-center justify-center mx-auto shadow-md shadow-neon-yellow/20">
+            03
+          </div>
+          <h3 class="font-sport font-bold text-lg text-white">Get Live Updates</h3>
+          <p class="text-xs text-gray-400 leading-relaxed">
+            Access pitch reports, team analysis, fantasy XI recommendations, and ball insights.
+          </p>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- FAQ Section -->
+  <section class="py-16 bg-stadium-card/40 border-t border-stadium-border">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="text-center mb-10">
+        <h2 class="font-sport text-2xl sm:text-3xl font-extrabold text-white">
+          Frequently Asked Questions
+        </h2>
+        <p class="text-gray-400 text-xs sm:text-sm mt-1">Clear answers to your common questions</p>
+      </div>
+
+      <div class="space-y-3" id="faq-container">
+        
+        <!-- FAQ Item 1 -->
+        <div class="glass-card rounded-2xl overflow-hidden">
+          <button onclick="toggleFaq(1)" class="w-full text-left p-4 sm:p-5 font-sport font-bold text-white text-sm sm:text-base flex justify-between items-center gap-4 hover:text-neon-green transition-colors">
+            <span>1. Is joining the Telegram Channel completely free?</span>
+            <i id="faq-icon-1" class="fa-solid fa-chevron-down text-neon-green text-xs transition-transform duration-200"></i>
+          </button>
+          <div id="faq-ans-1" class="hidden px-5 pb-5 text-xs sm:text-sm text-gray-300 border-t border-stadium-border/50 pt-3 leading-relaxed">
+            Yes, 100%! Joining our community Telegram channel is completely free. You get daily match analysis, toss updates, and insights without any charges.
+          </div>
+        </div>
+
+        <!-- FAQ Item 2 -->
+        <div class="glass-card rounded-2xl overflow-hidden">
+          <button onclick="toggleFaq(2)" class="w-full text-left p-4 sm:p-5 font-sport font-bold text-white text-sm sm:text-base flex justify-between items-center gap-4 hover:text-neon-green transition-colors">
+            <span>2. Which cricket tournaments are covered?</span>
+            <i id="faq-icon-2" class="fa-solid fa-chevron-down text-neon-green text-xs transition-transform duration-200"></i>
+          </button>
+          <div id="faq-ans-2" class="hidden px-5 pb-5 text-xs sm:text-sm text-gray-300 border-t border-stadium-border/50 pt-3 leading-relaxed">
+            We cover all major international tournaments including the ICC World Cup, T20 World Cups, IPL, BBL, PSL, CPL, Asia Cup, and bilateral Test/ODI/T20 series worldwide.
+          </div>
+        </div>
+
+        <!-- FAQ Item 3 -->
+        <div class="glass-card rounded-2xl overflow-hidden">
+          <button onclick="toggleFaq(3)" class="w-full text-left p-4 sm:p-5 font-sport font-bold text-white text-sm sm:text-base flex justify-between items-center gap-4 hover:text-neon-green transition-colors">
+            <span>3. How frequently are match insights posted?</span>
+            <i id="faq-icon-3" class="fa-solid fa-chevron-down text-neon-green text-xs transition-transform duration-200"></i>
+          </button>
+          <div id="faq-ans-3" class="hidden px-5 pb-5 text-xs sm:text-sm text-gray-300 border-t border-stadium-border/50 pt-3 leading-relaxed">
+            Updates are posted continuously before and during live matches—including pitch reports 1 hour before toss, confirmed Playing XIs, and ball-by-ball analysis.
+          </div>
+        </div>
+
+        <!-- FAQ Item 4 -->
+        <div class="glass-card rounded-2xl overflow-hidden">
+          <button onclick="toggleFaq(4)" class="w-full text-left p-4 sm:p-5 font-sport font-bold text-white text-sm sm:text-base flex justify-between items-center gap-4 hover:text-neon-green transition-colors">
+            <span>4. How do I get immediate access?</span>
+            <i id="faq-icon-4" class="fa-solid fa-chevron-down text-neon-green text-xs transition-transform duration-200"></i>
+          </button>
+          <div id="faq-ans-4" class="hidden px-5 pb-5 text-xs sm:text-sm text-gray-300 border-t border-stadium-border/50 pt-3 leading-relaxed">
+            Simply click any <button onclick="handleTelegramClick()" class="text-neon-green font-bold underline">Join Telegram Channel</button> button on this page to get redirected straight to our official channel.
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Disclaimer Footer -->
+  <footer class="bg-stadium-bg border-t border-stadium-border py-10">
+    <div class="max-w-6xl mx-auto px-4 text-center space-y-6">
+      
+      <div class="flex items-center justify-center gap-2">
+        <i class="fa-solid fa-baseball text-neon-green"></i>
+        <span class="font-sport font-bold text-lg text-white">CRICPULSE</span>
+      </div>
+
+      <p class="text-xs text-gray-400 max-w-xl mx-auto leading-relaxed">
+        Disclaimer: CricPulse is an informational sports news and match analysis platform. All content provided is strictly for educational and entertainment purposes. We do not host or encourage real-money betting or gambling activities.
+      </p>
+
+      <div class="text-xs text-gray-400 pt-4 border-t border-stadium-border">
+        &copy; <span id="year"></span> CricPulse Analytics. All Rights Reserved.
+      </div>
+
+    </div>
+  </footer>
+
+  <!-- Mobile Sticky Bottom CTA Bar -->
+  <div class="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-stadium-bg/95 backdrop-blur-lg border-t border-neon-green/40 p-3 flex items-center justify-between gap-3 shadow-2xl">
+    <div>
+      <span class="font-sport font-bold text-white text-xs block leading-tight">LIVE MATCH HUB</span>
+      <span class="text-[10px] text-neon-green">50,000+ Active Members</span>
+    </div>
+    <button onclick="handleTelegramClick()" class="telegram-link flex-1 inline-flex items-center justify-center gap-2 bg-gradient-to-r from-neon-green to-emerald-500 text-stadium-bg font-sport font-bold py-3 px-4 rounded-xl text-sm shadow-md active:scale-95 transition-transform">
+      <i class="fa-brands fa-telegram text-lg"></i>
+      <span>Join Telegram →</span>
+    </button>
+  </div>
+
+  <script>
+    /* 
+    ===================================================
+    EASY EDITABLE CRICKET CONFIGURATION OBJECT
+    ===================================================
+    */
+    const CONFIG = {
+      telegramUrl: "https://t.me/your_cricket_channel", // Replace with your Telegram link
+      headline: "Ultimate Cricket Hub & Live Match Insights",
+      matchTitle: "IND vs AUS T20",
+      targetScore: 182,
+      heroTag: "#1 Cricket Analytics & Match Predictors",
+      activeMembers: "50,000+",
+      accuracyRate: "89.4%"
+    };
+
+    // Global Telegram Handler
+    function handleTelegramClick() {
+      if (CONFIG.telegramUrl) {
+        window.open(CONFIG.telegramUrl, '_blank', 'noopener,noreferrer');
+      } else {
+        console.warn("Telegram URL is not configured.");
+      }
+    }
+
+    // Interactive Pitch Ball Simulation Engine State
+    let currentRuns = 142;
+    let currentWickets = 3;
+    let ballsBowled = 92; // 15.2 overs = 92 balls
+    const recentOutcomeHistory = ['1', '4', '0', '6', 'W'];
+
+    function simulateNextBall() {
+      if (ballsBowled >= 120) {
+        document.getElementById('ball-outcome-display').innerText = "MATCH ENDED";
+        document.getElementById('pitch-commentary').innerText = "Innings completed! Check Telegram for match summary.";
+        return;
+      }
+
+      const outcomes = ['0', '1', '2', '4', '6', 'W', '1lb', '2b'];
+      const commentaryList = {
+        '0': "Dot ball! Excellent line outside off stump.",
+        '1': "Quick single taken into the cover gap.",
+        '2': "Driven through deep mid-wicket for two runs.",
+        '4': "FOUR! Pure timing through the covers!",
+        '6': "SIX! High over long-on into the crowd!",
+        'W': "OUT! Clean bowled! What a delivery!",
+        '1lb': "Leg bye taken quickly.",
+        '2b': "Bouncer slips past the keeper for two byes."
+      };
+
+      const outcome = outcomes[Math.floor(Math.random() * outcomes.length)];
+      ballsBowled++;
+
+      // Score Math Calculation
+      if (outcome === 'W') {
+        currentWickets = Math.min(10, currentWickets + 1);
+      } else {
+        const runVal = parseInt(outcome) || 1;
+        currentRuns += runVal;
+      }
+
+      // Update Overs Display
+      const oversFull = Math.floor(ballsBowled / 6);
+      const oversRem = ballsBowled % 6;
+      const overStr = `${oversFull}.${oversRem}`;
+
+      // DOM UI Updates
+      const scoreEl = document.getElementById('sim-score-ind');
+      const oversEl = document.getElementById('sim-overs-ind');
+      const displayEl = document.getElementById('ball-outcome-display');
+      const commEl = document.getElementById('pitch-commentary');
+
+      scoreEl.innerText = `${currentRuns}/${currentWickets}`;
+      oversEl.innerText = `${overStr} / 20.0 Overs`;
+      displayEl.innerText = outcome === 'W' ? "OUT (W)!" : `${outcome} RUNS`;
+      
+      // Color coding outcome
+      if (outcome === '6') displayEl.className = "font-sport font-extrabold text-4xl text-neon-yellow animate-bounce tracking-wider my-1";
+      else if (outcome === '4') displayEl.className = "font-sport font-extrabold text-4xl text-neon-green tracking-wider my-1";
+      else if (outcome === 'W') displayEl.className = "font-sport font-extrabold text-4xl text-red-500 tracking-wider my-1";
+      else displayEl.className = "font-sport font-extrabold text-4xl text-white tracking-wider my-1";
+
+      commEl.innerText = `"${commentaryList[outcome]}"`;
+
+      // Update Recent Ball List
+      recentOutcomeHistory.shift();
+      recentOutcomeHistory.push(outcome);
+      renderRecentBalls();
+    }
+
+    function renderRecentBalls() {
+      const container = document.getElementById('recent-balls');
+      if (!container) return;
+
+      container.innerHTML = recentOutcomeHistory.map(b => {
+        let cls = "bg-gray-800 text-gray-300";
+        if (b === '4') cls = "bg-neon-green/20 text-neon-green font-bold";
+        if (b === '6') cls = "bg-neon-yellow/20 text-neon-yellow font-bold";
+        if (b === 'W') cls = "bg-red-500/20 text-red-400 font-bold";
+        return `<span class="${cls} px-1.5 py-0.5 rounded">${b}</span>`;
+      }).join('');
+    }
+
+    // Prediction Widget Handler
+    function selectPrediction(team) {
+      const quizContainer = document.getElementById('quiz-container');
+      const quizResult = document.getElementById('quiz-result');
+      const quizResultText = document.getElementById('quiz-result-text');
+
+      if (quizContainer && quizResult) {
+        quizContainer.classList.add('hidden');
+        quizResult.classList.remove('hidden');
+        quizResultText.innerText = `You predicted ${team}! Get the full ball-by-ball analysis and player XI strategy on our VIP Telegram Channel.`;
+      }
+    }
+
+    // FAQ Accordion Handler
+    function toggleFaq(id) {
+      const ans = document.getElementById(`faq-ans-${id}`);
+      const icon = document.getElementById(`faq-icon-${id}`);
+
+      if (ans.classList.contains('hidden')) {
+        ans.classList.remove('hidden');
+        icon.classList.add('rotate-180');
+      } else {
+        ans.classList.add('hidden');
+        icon.classList.remove('rotate-180');
+      }
+    }
+
+    // Dynamic Binding on Load
+    document.addEventListener("DOMContentLoaded", function() {
+      document.getElementById('year').textContent = new Date().getFullYear();
+
+      const matchTitleEl = document.getElementById('header-match-title');
+      if (matchTitleEl) matchTitleEl.textContent = CONFIG.matchTitle;
+
+      const headlineEl = document.getElementById('hero-headline');
+      if (headlineEl) headlineEl.textContent = CONFIG.headline;
+
+      const tagEl = document.getElementById('hero-tag');
+      if (tagEl) tagEl.textContent = CONFIG.heroTag;
+    });
+  </script>
+</body>
+</html>
